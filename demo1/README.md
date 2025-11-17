@@ -35,12 +35,18 @@ will show it running in a container.
 Yes, and that's exactly what we're here to do. Locally, let's assume
 you have Docker installed and the Docker daemon running.
 
-```
-docker pull fluxrm/flux-core:latest
-docker pull fluxrm/flux-sched:latest
+For this demo, clone the repository I created first
 
 ```
-With just these containers, you can start a flux _instance_, and have a local
+git clone https://github.com/wihobbs/doe-booth.git
+cd doe-booth/demo1
+docker build -t demo .
+docker run -it demo
+```
+The flux-core and flux-sched containers are published on Dockerhub 
+with [many different tags for different distros and architectures](https://hub.docker.com/u/fluxrm).
+
+With just this container, you can start a flux _instance_, and have a local
 resource manager running on your laptop. Try it out with:
 
 ```
@@ -103,8 +109,10 @@ Here's a basic table that shows the four submission commands we use in Flux.
 
 So, in our test container, let's get started with some simple applications 
 that leverage these features.
+
+Start by running `make` in the container. Then, try simple job submission with:
+
 ```
-flux run make
 flux run -N1 -n10 ./hello
 flux alloc -N1 -n10 ./hello
 
@@ -191,6 +199,9 @@ make -j 8 install
 export FLUX_SHELL_RC_PATH=/home/fluxuser/build/share/mpibind:$FLUX_SHELL_RC_PATH
 ```
 
+All of these commands in the container are wrapped into the `build-mpibind.sh` 
+script, although you will have to set the last environment variable manually.
+
 ## What are the binding options I can use with `-o mpibind`?
 Because of the setup of the container, by default mpibind is going to be 
 doing our affinity mappings for us. You can see this if you run
@@ -204,8 +215,6 @@ mpibind has more options for how to space programs out across the whole node,
 like `-o mpibind=greedy:1` and `-o mpibind=smt:1`. Here's some commands to
 illustrate what those will do:
 
-
-
 With mpibind we can also restrict the number of cores  that can be used 
 for the job:
 ```
@@ -216,6 +225,9 @@ check this with the vcpu program in the container.
 
 mpibind also provides an option, `MPIBIND_RESTRICT_TYPE`, which can be
 set to either `cpu` or `mem` to optimize its mappings for either, respectively.
+
+I also put Ben Cumming's [affinity package](https://github.com/bcumming/affinity) 
+in this container for an MPI and OpenMP demo of affinity within the container.
 
 ## For more information, see:
 

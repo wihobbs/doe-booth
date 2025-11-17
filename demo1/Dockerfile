@@ -7,4 +7,8 @@ COPY hello.c /home/fluxuser/hello.c
 RUN sudo chown fluxuser /home/fluxuser/*
 RUN sudo chmod a+rwx /home/fluxuser/* 
 
+WORKDIR /home/fluxuser
+RUN git clone https://github.com/bcumming/affinity.git
+RUN CC=gcc CXX=g++ cmake ./affinity/. && make -j 4
+
 ENTRYPOINT ["/usr/bin/flux", "start", "-s4", "/bin/bash"]
